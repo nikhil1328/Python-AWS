@@ -1,0 +1,19 @@
+### Friday June 05 17:12:14 IST 2020
+## Purpose ## Python script to create a VPC ##
+## Created by Nikhil Kulkarni ##
+#########################################################################
+
+import boto3
+ec2 = boto3.resource('ec2')
+
+# create VPC
+vpc = ec2.create_vpc(CidrBlock='10.10.0.0/16')
+
+# assign a name to our VPC
+vpc.create_tags(Tags=[{"Key": "Name", "Value": "python_vpc"}])
+vpc.wait_until_available()
+
+# enable public dns hostname so that we can SSH into it later
+ec2Client = boto3.client('ec2')
+ec2Client.modify_vpc_attribute( VpcId = vpc.id , EnableDnsSupport = { 'Value': True } )
+ec2Client.modify_vpc_attribute( VpcId = vpc.id , EnableDnsHostnames = { 'Value': True } )
